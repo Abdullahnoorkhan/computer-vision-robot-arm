@@ -38,7 +38,7 @@ Both goals were successfully achieved.
 
 ### Inverse Kinematics Simulation:
 ### Video Demonstration (Click to Watch!)
-[](https://img.youtube.com/vi/xQjae3qHbV8/maxresdefault.jpg)](https://youtu.be/xQjae3qHbV8)
+[![Watch the full demonstration on YouTube](https://img.youtube.com/vi/xQjae3qHbV8/maxresdefault.jpg)](https://youtu.be/xQjae3qHbV8)
 
 ## How It Works
 
