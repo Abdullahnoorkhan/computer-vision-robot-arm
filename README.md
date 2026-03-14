@@ -30,15 +30,15 @@ Both goals were successfully achieved.
 - **Microcontroller**: ESP32 programmed via Arduino IDE  
 - **Hardware**: 6-DOF robotic arm with 6 servo motors  
 
-## Demonstrations
+## Demonstrations:
 
 ### Hand Tracking Control
-### Video Demonstration
+### Video Demonstration (Click to Watch!)
 [![Watch the full demonstration](https://img.youtube.com/vi/3YrJATeAfHo/hqdefault.jpg)](https://youtu.be/3YrJATeAfHo)
 
 ### Inverse Kinematics Simulation
-![IK Simulation Interface](images/simulation.png)  
-*HTML canvas showing reachable workspace (green dots), live arm rendering, and real-time angle display.*
+### Video Demonstration (Click to Watch!)
+[![Watch the full demonstration](https://img.youtube.com/vi/3YrJATeAfHo/hqdefault.jpg)](https://youtu.be/xQjae3qHbV8)
 
 ## How It Works
 
