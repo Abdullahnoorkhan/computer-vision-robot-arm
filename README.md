@@ -34,7 +34,8 @@ Both goals were successfully achieved.
 
 ### Hand Tracking Control:
 ### Video Demonstration (Click to Watch!)
-[](https://img.youtube.com/vi/3YrJATeAfHo/maxresdefault.jpg)](https://youtu.be/3YrJATeAfHo)
+### Full Video Demonstration
+[![Watch the full demonstration on YouTube](https://img.youtube.com/vi/3YrJATeAfHo/maxresdefault.jpg)](https://youtu.be/3YrJATeAfHo)
 
 ### Inverse Kinematics Simulation:
 ### Video Demonstration (Click to Watch!)
