@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>2-Link Planar Linkage (IK + Angle Viz)</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+    }
+    canvas {
+        border: 1px solid #333;
+        background: #fafafa;
+    }
+    .controls {
+        margin: 10px;
+    }
+    input {
+        width: 70px;
+        margin: 0 5px;
+    }
+</style>
+</head>
+<body>
+
+<h3 style="color: red;">2-Link Planar Linkage Robot Arm</h3>
+<p>L₁ = 4 cm, L₂ = 12 cm | θ₂ ∈ [−90°, +90°]</p>
+
+<div class="controls">
+    X: <input type="number" id="xInput" step="0.1">
+    Y: <input type="number" id="yInput" step="0.1">
+    <button onclick="solveInput()">Solve</button>
+    <button id="connectButton" onclick="connectToSerial()">Connect to Arduino</button>
+</div>
+
+<canvas id="canvas" width="720" height="480"></canvas>
+<div id="info">Click or enter coordinates</div>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const info = document.getElementById("info");
+const xInput = document.getElementById("xInput");
+const yInput = document.getElementById("yInput");
+
+const L1 = 4;
+const L2 = 12;
+const scale = 20;
+
+const origin = {
+    x: canvas.width / 2,
+    y: canvas.height - 60
+};
+
+function toCanvas(x, y) {
+    return {
+        x: origin.x + x * scale,
+        y: origin.y - y * scale
+    };
+}
+
+function drawAxes() {
+    ctx.strokeStyle = "#aaa";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, origin.y);
+    ctx.lineTo(canvas.width, origin.y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(origin.x, 0);
+    ctx.lineTo(origin.x, canvas.height);
+    ctx.stroke();
+}
+
+function inverseKinematics(x, y) {
+    if (y < 0) return null;
+
+    const r2 = x*x + y*y;
+    const r = Math.sqrt(r2);
+    if (r > L1 + L2 || r < Math.abs(L2 - L1)) return null;
+
+    const cosT2 = (r2 - L1*L1 - L2*L2) / (2 * L1 * L2);
+    if (cosT2 < -1 || cosT2 > 1) return null;
+
+    const sinT2 = Math.sqrt(1 - cosT2*cosT2);
+
+    // Case 1: Elbow Up 
+    const theta2_up = Math.atan2(sinT2, cosT2);
+    if (theta2_up >= -Math.PI/2 && theta2_up <= Math.PI/2) {
+        const k1_up = L1 + L2 * Math.cos(theta2_up);
+        const k2_up = L2 * Math.sin(theta2_up);
+        const theta1_up = Math.atan2(y, x) - Math.atan2(k2_up, k1_up);
+        const t1deg_up = theta1_up * 180 / Math.PI;
+        if (t1deg_up >= 0 && t1deg_up <= 180) {
+            return { theta1: theta1_up, theta2: theta2_up, configuration: 'elbow_up' };
+        }
+    }
+
+    // Case 2: Elbow Down 
+    const theta2_down = Math.atan2(-sinT2, cosT2);
+    if (theta2_down >= -Math.PI/2 && theta2_down <= Math.PI/2) {
+        const k1_down = L1 + L2 * Math.cos(theta2_down);
+        const k2_down = L2 * Math.sin(theta2_down);
+        const theta1_down = Math.atan2(y, x) - Math.atan2(k2_down, k1_down);
+        const t1deg_down = theta1_down * 180 / Math.PI;
+        if (t1deg_down >= 0 && t1deg_down <= 180) {
+            return { theta1: theta1_down, theta2: theta2_down, configuration: 'elbow_down' };
+        }
+    }
+
+    return null;
+}
+
+function drawWorkspace() {
+    ctx.fillStyle = "rgba(0,120,0,0.4)";
+    for (let x = -16; x <= 16; x += 0.15) {
+        for (let y = 0; y <= 16; y += 0.15) {
+            if (inverseKinematics(x, y)) {
+                const p = toCanvas(x, y);
+                ctx.fillRect(p.x, p.y, 1.3, 1.3);
+            }
+        }
+    }
+}
+
+function drawAngleArc(center, start, end, radius, label, counterclockwise) {
+    ctx.strokeStyle = "#cc0000";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(center.x, center.y, radius, start, end, counterclockwise);
+    ctx.stroke();
+
+    const mid = (start + end) / 2;
+    const labelRadius = radius + 10;
+    ctx.fillStyle = "#cc0000";
+    ctx.fillText(label, center.x + labelRadius * Math.cos(mid),
+                        center.y + labelRadius * Math.sin(mid));
+}
+
+function drawArm(theta1, theta2) {
+    const x1 = L1 * Math.cos(theta1);
+    const y1 = L1 * Math.sin(theta1);
+    const x2 = x1 + L2 * Math.cos(theta1 + theta2);
+    const y2 = y1 + L2 * Math.sin(theta1 + theta2);
+
+    const p0 = toCanvas(0, 0);
+    const p1 = toCanvas(x1, y1);
+    const p2 = toCanvas(x2, y2);
+
+    ctx.strokeStyle = "#004c99";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(p0.x, p0.y);
+    ctx.lineTo(p1.x, p1.y);
+    ctx.lineTo(p2.x, p2.y);
+    ctx.stroke();
+
+    ctx.fillStyle = "#000";
+    [p0, p1, p2].forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    // Angle visualization for theta1 
+    drawAngleArc(p0, theta1, Math.PI, 30, "θ₁", true);
+
+    // Angle visualization for theta2 
+    drawAngleArc(p1, theta1 + theta2, theta1 + Math.PI/2, 25, "θ₂", true);
+
+    // Draw reference axis for theta2 
+    ctx.setLineDash([5, 5]);
+    ctx.strokeStyle = "#888888";
+    ctx.lineWidth = 2;
+    const ref_len = L2 * 0.5;
+    const ref_angle = theta1 + Math.PI / 2;
+    const ref_dx = ref_len * Math.cos(ref_angle);
+    const ref_dy = ref_len * Math.sin(ref_angle);
+    const p_ref = toCanvas(x1 + ref_dx, y1 + ref_dy);
+    ctx.beginPath();
+    ctx.moveTo(p1.x, p1.y);
+    ctx.lineTo(p_ref.x, p_ref.y);
+    ctx.stroke();
+
+    // Labeling the 0° reference
+    ctx.fillStyle = "#888888";
+    ctx.fillText("0°", p_ref.x + 5, p_ref.y + 5);
+
+    // left-most (180° reference for theta2, dashed)
+    const max_angle = theta1 - Math.PI / 2;
+    const max_dx = ref_len * Math.cos(max_angle);
+    const max_dy = ref_len * Math.sin(max_angle);
+    const p_max = toCanvas(x1 + max_dx, y1 + max_dy);
+    ctx.beginPath();
+    ctx.moveTo(p1.x, p1.y);
+    ctx.lineTo(p_max.x, p_max.y);
+    ctx.stroke();
+
+    // Labeling the 180° reference
+    ctx.fillStyle = "#888888";
+    ctx.fillText("180°", p_max.x + 5, p_max.y + 5);
+
+    // Drawing reference axis for theta1 
+    const ref_len1 = L1 * 0.5;
+    const ref_angle1 = Math.PI;
+    const ref_dx1 = ref_len1 * Math.cos(ref_angle1);
+    const ref_dy1 = ref_len1 * Math.sin(ref_angle1);
+    const p_ref1 = toCanvas(ref_dx1, ref_dy1);
+    ctx.beginPath();
+    ctx.moveTo(p0.x, p0.y);
+    ctx.lineTo(p_ref1.x, p_ref1.y);
+    ctx.stroke();
+
+    // Labeling the 0° reference for theta1
+    ctx.fillStyle = "#888888";
+    ctx.fillText("0°", p_ref1.x + 5, p_ref1.y + 5);
+
+    // Drawing 180° reference for theta1 (positive x)
+    const max_angle1 = 0;
+    const max_dx1 = ref_len1 * Math.cos(max_angle1);
+    const max_dy1 = ref_len1 * Math.sin(max_angle1);
+    const p_max1 = toCanvas(max_dx1, max_dy1);
+    ctx.beginPath();
+    ctx.moveTo(p0.x, p0.y);
+    ctx.lineTo(p_max1.x, p_max1.y);
+    ctx.stroke();
+
+    // Labeling the 180° reference for theta1
+    ctx.fillStyle = "#888888";
+    ctx.fillText("180°", p_max1.x + 5, p_max1.y + 5);
+
+    ctx.setLineDash([]); // reset
+}
+
+function redraw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawWorkspace();
+    drawAxes();
+}
+
+let currentRes = null; // Store the latest result for sending to Arduino
+let serialPort = null; // Global variable to hold the SerialPort object
+
+function solveAt(x, y) {
+    redraw();
+    const res = inverseKinematics(x, y);
+    if (!res) {
+        info.textContent = `(${x.toFixed(2)}, ${y.toFixed(2)}) → Unreachable`;
+        currentRes = null;
+        return;
+    }
+    currentRes = res;
+    drawArm(res.theta1, res.theta2);
+    const theta1_deg = res.theta1 * 180 / Math.PI;
+    const theta2_deg = res.theta2 * 180 / Math.PI;
+    const new_theta1_deg = (180 - theta1_deg).toFixed(2);
+    let new_theta2_deg;
+    if (theta2_deg > 0 && theta2_deg < 90) {
+        new_theta2_deg = (90 - theta2_deg).toFixed(2);
+    } else if (theta2_deg < 0) {
+        new_theta2_deg = (90 - theta2_deg).toFixed(2);
+    } else {
+        new_theta2_deg = theta2_deg.toFixed(2); 
+    }
+    info.innerHTML =
+        `θ₁ = ${new_theta1_deg}°<br>` +
+        `θ₂ = ${new_theta2_deg}°`;
+    
+    //send to Arduino in real-time
+    sendToArduino();
+}
+
+canvas.addEventListener("click", e => {
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left - origin.x) / scale;
+    const y = (origin.y - (e.clientY - rect.top)) / scale;
+    xInput.value = x.toFixed(2);
+    yInput.value = y.toFixed(2);
+    solveAt(x, y);
+});
+
+function solveInput() {
+    const x = parseFloat(xInput.value);
+    const y = parseFloat(yInput.value);
+    if (!isNaN(x) && !isNaN(y)) solveAt(x, y);
+}
+
+// Add real time solving on input change
+xInput.addEventListener('input', solveInput);
+yInput.addEventListener('input', solveInput);
+
+async function connectToSerial() {
+    if (!("serial" in navigator)) {
+        console.log("Web Serial API not supported in this browser. Use Chrome or Edge.");
+        return;
+    }
+
+    try {
+        // Request the port once
+        serialPort = await navigator.serial.requestPort();
+        console.log("Serial port selected successfully!");
+    } catch (error) {
+        console.error("Error selecting serial port:", error);
+    }
+}
+
+async function sendToArduino() {
+    if (!currentRes) {
+        return;
+    }
+
+    if (!serialPort) {
+        console.error("No serial port selected. Please connect first.");
+        return;
+    }
+
+    const theta1_deg = currentRes.theta1 * 180 / Math.PI;
+    const theta2_deg = currentRes.theta2 * 180 / Math.PI;
+    const new_theta1_deg = 180 - theta1_deg;
+    let new_theta2_deg;
+    if (theta2_deg > 0 && theta2_deg < 90) {
+        new_theta2_deg = 90 - theta2_deg;
+    } else if (theta2_deg < 0) {
+        new_theta2_deg = 90 - theta2_deg;
+    } else {
+        new_theta2_deg = theta2_deg; 
+    }
+
+    const dataString = `M3 ${new_theta2_deg.toFixed(0)}; M2 ${new_theta1_deg.toFixed(0)};\n`;
+
+    try {
+        // To open the port if it's not already open
+        await serialPort.open({ baudRate: 115200 });
+
+        const writer = serialPort.writable.getWriter();
+        const encoder = new TextEncoder();
+        const data = encoder.encode(dataString);
+        await writer.write(data);
+
+        writer.releaseLock();
+        await serialPort.close(); 
+        console.log("Angles sent to Arduino successfully!");
+    } catch (error) {
+        console.error("Error sending to Arduino:", error);
+    }
+}
+
+redraw();
+</script>
+
+</body>
+</html>
