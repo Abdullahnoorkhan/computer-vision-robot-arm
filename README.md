@@ -1,11 +1,11 @@
 # Computer Vision Controlled Robot Arm with Hand Tracking
 
-A 6-DOF robotic arm equipped with 6 servo motors and controlled by an ESP32 WiFi processor. The project demonstrates full custom implementation of inverse kinematics (IK) from scratch, including reachability analysis and real-time servo control, followed by integration with computer vision for hand-tracking control.
+A 6 DOF robotic arm equipped with 6 servo motors and controlled by an ESP32 WiFi processor. The project demonstrates full custom implementation of inverse kinematics (IK) from scratch, including reachability analysis and real-time servo control, followed by integration with computer vision for hand-tracking control.
 
 ## Project Goals
 
 1. **Inverse Kinematics Implementation**  
-   Develop all software from scratch to solve inverse kinematics for a 2-link planar robotic arm (L₁ = 4 cm, L₂ = 12 cm). The solution calculates all reachable coordinates and automatically orients the arm to any specified (X, Y) position.
+   Develop all software from scratch to solve inverse kinematics for a 2 link planar robotic arm (L₁ = 4 cm, L₂ = 12 cm). The solution calculates all reachable coordinates and automatically orients the arm to any specified (X, Y) position.
 
 2. **Computer Vision Integration**  
    Extend the IK system with real-time hand tracking via webcam. The tip of the index finger is tracked and mapped to robot coordinates, enabling direct gesture-based control of the physical arm.
