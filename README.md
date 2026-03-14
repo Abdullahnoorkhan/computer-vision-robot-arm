@@ -44,6 +44,12 @@ Both goals were successfully achieved.
 ![Hand Tracking Demo](images/hand-tracking-green.png)  
 *Webcam feed with coordinate grid and color-coded fingertip marker (green = reachable)*
 
+![Hand Tracking Demo](images/hand-tracking-red.png)  
+*Webcam feed with coordinate grid and color-coded fingertip marker (red = unreachable)*
+
+![Hand Tracking Demo](images/html.png)  
+*HTML canvas showing reachable workspace (green dots), live arm rendering, and realtime angle display.*
+
 ## How It Works
 
 ### Goal 1: Inverse Kinematics (HTML Simulation)
