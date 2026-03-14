@@ -40,13 +40,14 @@ Both goals were successfully achieved.
 ### Video Demonstration (Click to Watch!)
 [![Watch the full demonstration on YouTube](https://img.youtube.com/vi/xQjae3qHbV8/maxresdefault.jpg)](https://youtu.be/xQjae3qHbV8)\
 
-### Webcam Output + Matplotlib Visualization (Screenshot)
+### Webcam Output + Matplotlib Visualization (Screenshots)
 ![Hand Tracking Demo](images/hand-tracking-green.png)  
 *Webcam feed with coordinate grid and color-coded fingertip marker (green = reachable)*
 
 ![Hand Tracking Demo](images/hand-tracking-red.png)  
 *Webcam feed with coordinate grid and color-coded fingertip marker (red = unreachable)*
 
+### HTML Simulation Web Page (Screenshot)
 ![Hand Tracking Demo](images/html.png)  
 *HTML canvas showing reachable workspace (green dots), live arm rendering, and realtime angle display.*
 
