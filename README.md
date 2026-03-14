@@ -33,18 +33,12 @@ Both goals were successfully achieved.
 ## Demonstrations
 
 ### Hand Tracking Control
-[![Demo](images/youtube-thumbnail.jpg)](https://youtu.be/3YrJATeAfHo)
+### Video Demonstration
+[![Watch the full demonstration](https://img.youtube.com/vi/3YrJATeAfHo/hqdefault.jpg)](https://youtu.be/3YrJATeAfHo)
 
 ### Inverse Kinematics Simulation
 ![IK Simulation Interface](images/simulation.png)  
 *HTML canvas showing reachable workspace (green dots), live arm rendering, and real-time angle display.*
-
-### Physical Arm in Action
-![Robot Arm Movement](images/arm-action.gif)  
-
-For longer demonstrations, embed a YouTube video:
-
-[![Watch full demonstration](images/youtube-thumbnail.jpg)](https://youtu.be/YOUR_VIDEO_ID)
 
 ## How It Works
 
