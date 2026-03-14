@@ -32,15 +32,12 @@ Both goals were successfully achieved.
 
 ## Demonstrations
 
-(Upload your videos, GIFs, and photos to an `images/` folder in the repository for them to appear here.)
+### Hand Tracking Control
+[![Demo](images/youtube-thumbnail.jpg)](https://youtu.be/3YrJATeAfHo)
 
 ### Inverse Kinematics Simulation
 ![IK Simulation Interface](images/simulation.png)  
 *HTML canvas showing reachable workspace (green dots), live arm rendering, and real-time angle display.*
-
-### Hand Tracking Control
-![Hand Tracking Demo](images/hand-tracking.png)  
-*Webcam feed with coordinate grid and color-coded fingertip marker (green = reachable, red = out of bounds).*
 
 ### Physical Arm in Action
 ![Robot Arm Movement](images/arm-action.gif)  
