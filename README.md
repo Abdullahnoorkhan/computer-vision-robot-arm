@@ -38,7 +38,7 @@ Both goals were successfully achieved.
 
 ### Inverse Kinematics Simulation:
 ### Video Demonstration (Click to Watch!)
-[![Watch the full demonstration on YouTube](https://img.youtube.com/vi/xQjae3qHbV8/maxresdefault.jpg)](https://youtu.be/xQjae3qHbV8)\
+[![Watch the full demonstration on YouTube](https://img.youtube.com/vi/xQjae3qHbV8/maxresdefault.jpg)](https://youtu.be/xQjae3qHbV8)
 
 ### Webcam Output + Matplotlib Visualization (Screenshots)
 ![Hand Tracking Demo](images/hand-tracking-green.png)  
